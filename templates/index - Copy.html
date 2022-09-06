@@ -1,0 +1,399 @@
+<script>
+  window.watsonAssistantChatOptions = {
+    integrationID: "b2a45e1f-590a-42b8-9cb1-43c277e50a3a", // The ID of this integration.
+    region: "eu-gb", // The region your integration is hosted in.
+    serviceInstanceID: "43db395a-e0f2-4f67-a8fa-e0e3d3823031", // The ID of your service instance.
+    onLoad: function(instance) { instance.render(); }
+  };
+  setTimeout(function(){
+    const t=document.createElement('script');
+    t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
+    document.head.appendChild(t);
+  });
+</script>
+
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classify your Image!</title>
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+<!-- JQUERY -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<!-- Boostrap 4 CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<!-- Sweetalert2 -->
+<!--<script src="https://unpkg.com/sweetalert2@7.19.3/dist/sweetalert2.all.js"></script>-->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Favicon-->
+<link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='assets/favicon.ico') }}" />
+<!-- Bootstrap Icons-->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+<!-- Google fonts-->
+<link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+<!-- SimpleLightbox plugin CSS-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="{{ url_for('static',filename='css/styles.css') }}" rel="stylesheet" />
+
+<!--<js>-->	
+<script type="text/javascript" src="{{ url_for('static',filename='js/index.js') }}"></script>
+<!--<css>-->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/index.css') }}"/>	
+</head> 
+<body style="background-color:black"> 
+	<!-- Navigation-->
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
+		<div class="container px-4 px-lg-5">
+			<a class="navbar-brand" href="/"><img id="siteimg" src="{{ url_for('static',filename='assets/ACE_logo.png') }}" alt="ACE Supermarket" width="85" height="64" style="width:85px;height:64px"></a>
+			<button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ms-auto my-2 my-lg-0">
+					<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="#location">ACE Singapore</a></li>
+					<li class="nav-item"><a class="nav-link" href="#portfolio">Recipe</a></li>
+					<li class="nav-item"><a class="nav-link" href="#ourbrand">Our Brand</a></li>
+					<li class="nav-item"><a class="nav-link" href="#ourteam">Our Team</a></li>
+					<li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- Masthead-->
+	<header class="masthead">
+		<div class="container px-4 px-lg-5 h-100">
+			<div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+				<div class="col-lg-8 align-self-end">
+					<h1 class="text-white font-weight-bold">Upload your image</h1>
+					<h4 class="text-white">(Images less than 1MB in size)</h4>						
+					<hr class="divider" />
+				</div>
+				<div class="col-lg-8 align-self-baseline">
+					<!--<a class="btn btn-primary btn-xl" href="#about">Find Out More</a>-->					
+					<div id="maintext" class="col-md-12 col-sm-12 bodypos">						
+						<form method=post enctype=multipart/form-data>
+							<p class="text-white">
+								<div class="button_outer">
+									<div class="btn_upload">
+										<input type=file name=file onchange="onchange_submitfile(this);">
+										Upload Image
+									</div>
+									<div class="processing_bar"></div>
+									<div class="success_box"></div>
+								</div>  
+								<br/>	
+								<br/>				
+								<button id="submituploadfile" type="submit" class="btn btn-primary hidectrl" value="Upload">Go</button>
+								<!--<input type=submit value=Upload>-->
+							</p>
+						</form> 
+					</div> 
+					
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- Location-->
+	<section class="page-section" id="location">
+		<div class="container px-2 px-lg-2">
+			
+				<!--<h2 class="text-center mt-0">Ace in Singapore</h2>-->
+			
+				
+			<div class="row gx-4 gx-lg-5 justify-content-center">
+				<div class="col-lg-8 text-center">
+					<!--<h2 class="text-white mt-0">We've got what you need!</h2>-->
+					<img id="siteimg" src="{{ url_for('static',filename='assets/ACE_logo.png') }}" alt="ACE Supermarket" width="400" height="300" style="width:400px;height:300px">
+					<!--<hr class="divider divider-light" />-->
+					<hr class="divider" />
+					<p class="text-black-75 mb-4">
+						ACE is your favourite local supermarket, present in 88 locations all around Singapore.
+						We bring the freshest ingredients to you at your convenience.  
+						You can shop with us online 24/7 wherever you are, or come into any one of our physical stores
+					</p>
+					
+				</div>
+			</div>
+
+
+			
+			
+			<div class="row gx-4 gx-lg-5">
+				
+				<div class="col-lg-3 col-md-6 text-center">
+					<div class="mt-5">
+						<div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+						<h3 class="h4 mb-2">North</h3>
+						<p class="text-muted mb-0">Causeway Point</p>
+						<p class="text-muted mb-0">1 Woodlands Square, #02-21 to 24, Causeway Point, Singapore 738099</p>
+						<div class="mapouter"><div class="gmap_canvas"><iframe width="500" height="300" id="gmap_canvas" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.565110844623!2d103.78375841515913!3d1.4360986616913025!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da13a8bd844883%3A0x4f271a68efda9c2e!2sCauseway%20Point!5e0!3m2!1sen!2ssg!4v1661845667454!5m2!1sen!2ssg" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><br><style>.mapouter{position:relative;text-align:right;height:500px;width:300px;}</style><style>.gmap_canvas {overflow:hidden;background:none!important;height:500px;width:300px;}</style></div></div>
+										
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 text-center">
+					<div class="mt-5">
+						<div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+						<h3 class="h4 mb-2">East</h3>
+						<p class="text-muted mb-0">Bedok Mall</p>
+						<p class="text-muted mb-0">311 New Changi Road, #B1-26 to 28, Bedok Mall, Singapore 467360</p>
+						<div class="mapouter"><div class="gmap_canvas"><iframe width="500" height="300" id="gmap_canvas" src="https://maps.google.com/maps?q=311%20Bedok%20Mall%20New%20Upper%20Changi%20Rd,%20Singapore%20467360&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><br><style>.mapouter{position:relative;text-align:right;height:500px;width:300px;}</style><style>.gmap_canvas {overflow:hidden;background:none!important;height:500px;width:300px;}</style></div></div>
+								
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 text-center">
+					<div class="mt-5">
+						<div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+						<h3 class="h4 mb-2">South</h3>
+						<p class="text-muted mb-0">Marina Square</p>
+						<p class="text-muted mb-0">6 Raffles Blvd, #02-32 to 33, Marina Square, Singapore 039594</p>
+						<div class="mapouter"><div class="gmap_canvas"><iframe width="500" height="300" id="gmap_canvas" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8052985826275!2d103.85548911515957!3d1.2911587621198795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da193bb69442f5%3A0xb2dc5b4451335bf9!2sMarina%20Square!5e0!3m2!1sen!2ssg!4v1661845599118!5m2!1sen!2ssg" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><br><style>.mapouter{position:relative;text-align:right;height:500px;width:300px;}</style><style>.gmap_canvas {overflow:hidden;background:none!important;height:500px;width:300px;}</style></div></div>
+									
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 text-center">
+					<div class="mt-5">
+						<div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+						<h3 class="h4 mb-2">West</h3>
+						<p class="text-muted mb-0">Jurong Point</p>
+						<p class="text-muted mb-0">1 Jurong West Central 2, #02-26 to 29, Jurong Point, Singapore 648886</p>
+						<div class="mapouter"><div class="gmap_canvas"><iframe width="500" height="300" id="gmap_canvas" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7276288958524!2d103.7067297!3d1.3397443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x2d89b202b512e598!2sJurong%20Point!5e0!3m2!1sen!2ssg!4v1661845303749!5m2!1sen!2ssg" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><br><style>.mapouter{position:relative;text-align:right;height:500px;width:300px;}</style><style>.gmap_canvas {overflow:hidden;background:none!important;height:500px;width:300px;}</style></div></div>
+											
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Receipe-->
+	<div id="portfolio">
+		<div class="container-fluid p-0">
+			<div class="row g-0">
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box nasilemak" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/1.jpg') }}" title="Project Name" onclick="onclick_itemreceipe(this);">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/1.jpg') }}" alt="..." />
+						<div class="portfolio-box-caption">
+							<div class="project-category text-white-50">Nasi Lemak</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box charkwayteow" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/2.jpg') }}" title="Project Name" onclick="onclick_itemreceipe(this);">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/2.jpg') }}" alt="..." />
+						<div class="portfolio-box-caption">
+							<div class="project-category text-white-50">Char Kway Teow</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/3.png') }}" title="Project Name">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/3.png') }}" alt="..." />
+						<div class="portfolio-box-caption">
+							<div class="project-category text-white-50">Chilli Crab</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/4.png') }}" title="Project Name">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/4.png') }}" alt="..." />
+						<div class="portfolio-box-caption">
+							<div class="project-category text-white-50">Wanton Mee</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/5.jpg') }}" title="Project Name">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/5.jpg') }}" alt="..." />
+						<div class="portfolio-box-caption">
+							<div class="project-category text-white-50">Nasi Ayam</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-lg-4 col-sm-6">
+					<a class="portfolio-box" href="{{ url_for('static',filename='assets/img/portfolio/fullsize/6.jpg') }}" title="Project Name">
+						<img class="img-fluid" src="{{ url_for('static',filename='assets/img/portfolio/thumbnails/6.jpg') }}" alt="..." />
+						<div class="portfolio-box-caption p-3">
+							<div class="project-category text-white-50">Chicken Rice</div>
+							<div class="project-name">Click for Recipe</div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Our Brand-->
+	<div id="ourbrand">
+		<div class="container-fluid p-0 bg-light">
+			<div class="row g-0">
+				<div class="text-center">
+					<h2 class="section-heading">Our Foods and Brands</h2>
+				</div>
+				<div class="col-lg-3 col-xs-3">
+                    <div class="brandimg">
+                       <img class="mx-auto" src="/static/assets/img/brand/fish.png" alt="...">
+                        <h4>Substainable Fisheries</h4>
+					</div>
+                </div>
+				<div class="col-lg-3 col-xs-3">
+                    <div class="brandimg">
+                        <img class="mx-auto" src="/static/assets/img/brand/meats.png" alt="...">
+                        <h4>Meats</h4>
+					</div>
+                </div>
+				<div class="col-lg-3 col-xs-3">
+                    <div class="brandimg">
+                        <img class="mx-auto" src="/static/assets/img/brand/cow.png" alt="...">
+                        <h4>Dairy</h4>
+					</div>
+                </div>
+				<div class="col-lg-3 col-xs-3">
+                    <div class="brandimg">
+                        <img class="mx-auto" src="/static/assets/img/brand/Organic.png" alt="...">
+                        <h4>Organic</h4>
+					</div>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- Our Team-->
+	<div id="ourteam">
+		<div class="container-fluid p-0">
+			<div class="row g-0">
+				<div class="text-center">
+					<h2 class="section-heading">Our Team</h2>
+					<h3 class="section-subheading">The Foodies.</h3>
+				</div>			
+				<div class="col-sm-6 col-xs-6">
+                    <div class="team-member">
+                        <img class="mx-auto rounded-circle" src="/static/assets/img/team/member.png" alt="...">
+                        <h4>Team Member 1</h4>
+					</div>
+                </div>
+				<div class="col-sm-6 col-xs-6">
+                    <div class="team-member">
+                        <img class="mx-auto rounded-circle" src="/static/assets/img/team/member.png" alt="...">
+                        <h4>Team Member 2</h4>
+					</div>
+                </div>
+				<div class="col-sm-6 col-xs-6">
+                    <div class="team-member">
+                        <img class="mx-auto rounded-circle" src="/static/assets/img/team/member.png" alt="...">
+                        <h4>Team Member 3</h4>
+					</div>
+                </div>
+				<div class="col-sm-6 col-xs-6">
+                    <div class="team-member">
+                        <img class="mx-auto rounded-circle" src="/static/assets/img/team/member.png" alt="...">
+                        <h4>Team Member 4</h4>
+					</div>
+                </div>
+				<div class="row">
+					<div class="col-lg-8 mx-auto text-center">
+						<h5 class="section-subheading">Food for thoughts.</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Contact-->
+	<section class="page-section" id="contact">
+		<div class="container px-4 px-lg-5">
+			<div class="row gx-4 gx-lg-5 justify-content-center">
+				<div class="col-lg-8 col-xl-6 text-center">
+					<h2 class="mt-0">Let's Get In Touch!</h2>
+					<hr class="divider" />
+					<p class="text-muted mb-5">If you have more dishes that you would like to see, please provide your contact!</p>
+				</div>
+			</div>
+			<div class="row gx-4 gx-lg-5 justify-content-center mb-5">
+				<div class="col-lg-6">
+					<!-- * * * * * * * * * * * * * * *-->
+					<!-- * * SB Forms Contact Form * *-->
+					<!-- * * * * * * * * * * * * * * *-->
+					<!-- This form is pre-integrated with SB Forms.-->
+					<!-- To make this form functional, sign up at-->
+					<!-- https://startbootstrap.com/solution/contact-forms-->
+					<!-- to get an API token!-->
+					<form id="contactForm" data-sb-form-api-token="API_TOKEN">
+						<!-- Name input-->
+						<div class="form-floating mb-3">
+							<input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
+							<label for="name">Full name</label>
+							<div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
+						</div>
+						<!-- Email address input-->
+						<div class="form-floating mb-3">
+							<input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
+							<label for="email">Email address</label>
+							<div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
+							<div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
+						</div>
+						<!-- Phone number input-->
+						<div class="form-floating mb-3">
+							<input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
+							<label for="phone">Phone number</label>
+							<div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
+						</div>
+						<!-- Message input-->
+						<div class="form-floating mb-3">
+							<textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
+							<label for="message">Message</label>
+							<div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
+						</div>
+						<!-- Submit success message-->
+						<!---->
+						<!-- This is what your users will see when the form-->
+						<!-- has successfully submitted-->
+						<div class="d-none" id="submitSuccessMessage">
+							<div class="text-center mb-3">
+								<div class="fw-bolder">Form submission successful!</div>
+								To activate this form, sign up at
+								<br />
+								<a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
+							</div>
+						</div>
+						<!-- Submit error message-->
+						<!---->
+						<!-- This is what your users will see when there is-->
+						<!-- an error submitting the form-->
+						<div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
+						<!-- Submit Button-->
+						<div class="d-grid"><button class="btn btn-primary btn-xl disabled" id="submitButton" type="submit">Submit</button></div>
+					</form>
+				</div>
+			</div>
+			<div class="row gx-4 gx-lg-5 justify-content-center">
+				<div class="col-lg-4 text-center mb-5 mb-lg-0">
+					<i class="bi-phone fs-2 mb-3 text-muted"></i>
+					<div>(+65) 9123 4567</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Footer-->
+	<footer class="bg-light py-5">
+		<div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2022 - AI Team 3</div></div>
+		<div class="container px-4 px-lg-5"><div class="small text-center text-muted">Disclaimer: Only Char Kway Teow and Nasi Lemak is supported in the current release</div></div>
+	</footer>
+	<!-- Bootstrap core JS-->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- SimpleLightbox plugin JS-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
+	<!-- Core theme JS-->
+	<script type="text/javascript" src="{{ url_for('static',filename='js/scripts.js') }}"></script>
+
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+	<!-- * *                               SB Forms JS                               * *-->
+	<!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+	<script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+</body>
+</html>
